@@ -77,8 +77,8 @@ func NewList(width, height int) (list.Model, error) {
 	l.AdditionalFullHelpKeys = func() []key.Binding {
 		return []key.Binding{
 			key.NewBinding(
-				key.WithKeys("ctrl+a"),
-				key.WithHelp("ctrl+a", "add item"),
+				key.WithKeys("ctrl+t"),
+				key.WithHelp("ctrl+t", "add item"),
 			),
 			key.NewBinding(
 				key.WithKeys("backspace/d"),
