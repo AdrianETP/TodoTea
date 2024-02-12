@@ -2,4 +2,4 @@
 
 __todotea__ is an simple cli-todolist made with [bubbletea](https://github.com/charmbracelet/bubbletea)
 
-![video](./public/todotea.mp4)
+![video](./public/todotea.gif)
