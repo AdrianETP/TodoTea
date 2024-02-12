@@ -3,10 +3,12 @@ package main
 type Task struct {
 	title string
 	date  string
+	index int
 }
 type JsonTask struct {
 	Title string `json:"title"`
 	Date  string `json:"date"`
+	Index int    `json:index`
 }
 
 func (t Task) FilterValue() string {

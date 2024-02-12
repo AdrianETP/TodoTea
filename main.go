@@ -35,6 +35,10 @@ func SortJsonTasks(tasks []JsonTask) []JsonTask {
 		date2, _ := time.Parse("02-01-2006", tasks[j].Date) // Parse date string into time.Time object
 		return date1.Before(date2)
 	})
+	for i := range tasks {
+		tasks[i].Index = i
+	}
+	// panic(tasks)
 	return tasks
 }
 
@@ -65,6 +69,7 @@ func NewList(width, height int) (list.Model, error) {
 		var tempTask Task
 		tempTask.title = t.Title
 		tempTask.date = t.Date
+		tempTask.index = t.Index
 		l.InsertItem(i, tempTask)
 	}
 
@@ -99,6 +104,7 @@ func Tasks2Json(task []Task) []JsonTask {
 		var jsontask JsonTask
 		jsontask.Title = t.title
 		jsontask.Date = t.date
+		jsontask.Index = t.index
 		jsontasks = append(jsontasks, jsontask)
 	}
 	return jsontasks
@@ -186,10 +192,16 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		if msg.String() == "d" || msg.String() == "backspace" {
 			if m.view == "list" {
-				m.list.RemoveItem(m.list.Cursor())
+				// panic(m.list.SelectedItem().(Task).index)
+				m.list.RemoveItem(m.list.SelectedItem().(Task).index)
 				items := m.list.Items()
 				var tasks []Task = getTasksFromItems(items)
+				if len(tasks) == 0 {
+					WriteTasks([]JsonTask{})
+				}
 				jsonTasks := Tasks2Json(tasks)
+				jsonTasks = SortJsonTasks(jsonTasks)
+				// panic(jsonTasks)
 				WriteTasks(jsonTasks)
 			}
 		}
@@ -212,12 +224,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 
 					// Insert task into list and switch back to "list" view
-					m.list.InsertItem(0, m.tempTask)
 					m.view = "list"
-					m.tempTask = Task{}
-					m.counter = 0 // Reset counter
 					items := m.list.Items()
 					var tasks []Task = getTasksFromItems(items)
+					var index int
+					m.tempTask.index = index
+					tasks = append(tasks, m.tempTask)
+					m.tempTask = Task{}
+					m.counter = 0
 					jsonTasks := Tasks2Json(tasks)
 					jsonTasks = SortJsonTasks(jsonTasks)
 					WriteTasks(jsonTasks)
