@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -28,6 +29,15 @@ type model struct {
 	tempTask  Task
 }
 
+func SortJsonTasks(tasks []JsonTask) []JsonTask {
+	sort.Slice(tasks, func(i, j int) bool {
+		date1, _ := time.Parse("02-01-2006", tasks[i].Date) // Parse date string into time.Time object
+		date2, _ := time.Parse("02-01-2006", tasks[j].Date) // Parse date string into time.Time object
+		return date1.Before(date2)
+	})
+	return tasks
+}
+
 var inputStyles = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).
 	BorderForeground(lipgloss.Color("63")).Width(50).Height(1)
 var listStyles = lipgloss.NewStyle()
@@ -50,7 +60,7 @@ func NewList(width, height int) (list.Model, error) {
 	if err := json.NewDecoder(file).Decode(&tasks); err != nil {
 		return l, err
 	}
-
+	tasks = SortJsonTasks(tasks)
 	for i, t := range tasks {
 		var tempTask Task
 		tempTask.title = t.Title
@@ -210,8 +220,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					items := m.list.Items()
 					var tasks []Task = getTasksFromItems(items)
 					jsonTasks := Tasks2Json(tasks)
+					jsonTasks = SortJsonTasks(jsonTasks)
 					WriteTasks(jsonTasks)
 					m.input.Reset()
+					l, err := NewList(m.width, m.height)
+					if err != nil {
+						panic(err.Error())
+					}
+					m.list = l
 				}
 			} else if m.view == "edit" {
 				if m.input.Value() != "" && m.tempTask.title == "" {
@@ -241,8 +257,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					items := m.list.Items()
 					var tasks []Task = getTasksFromItems(items)
 					jsonTasks := Tasks2Json(tasks)
+					jsonTasks = SortJsonTasks(jsonTasks)
 					WriteTasks(jsonTasks)
 					m.input.Reset()
+					l, err := NewList(m.width, m.height)
+					if err != nil {
+						panic(err.Error())
+					}
+					m.list = l
 				}
 			}
 		}
