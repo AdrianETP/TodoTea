@@ -72,20 +72,20 @@ func NewList(width, height int) (list.Model, error) {
 	l.AdditionalFullHelpKeys = func() []key.Binding {
 		return []key.Binding{
 			key.NewBinding(
-				key.WithKeys("a"),
-				key.WithHelp("a", "add item"),
+				key.WithKeys("ctrl+a"),
+				key.WithHelp("ctrl+a", "add item"),
 			),
 			key.NewBinding(
-				key.WithKeys("d"),
-				key.WithHelp("d", "delete item"),
+				key.WithKeys("backspace/d"),
+				key.WithHelp("backspace/d", "delete item"),
 			),
 			key.NewBinding(
 				key.WithKeys("space"),
 				key.WithHelp("space", "set item status"),
 			),
 			key.NewBinding(
-				key.WithKeys("e"),
-				key.WithHelp("e", "edit item"),
+				key.WithKeys("ctrl+e"),
+				key.WithHelp("ctrl+e", "edit item"),
 			),
 		}
 	}
@@ -170,12 +170,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				WriteTasks(jsonTasks)
 			}
 		}
-		if msg.String() == "a" {
+		if msg.String() == "ctrl+t" {
 			if m.view == "list" {
 				m.view = "add"
 				m.input = textinput.New()
 				m.input.Focus()
-				m.input.SetValue("")
 			}
 		}
 		if msg.String() == "ctrl+q" {
@@ -185,7 +184,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				tea.Quit()
 			}
 		}
-		if msg.String() == "d" {
+		if msg.String() == "d" || msg.String() == "backspace" {
 			if m.view == "list" {
 				m.list.RemoveItem(m.list.Cursor())
 				items := m.list.Items()
@@ -268,7 +267,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
-		if msg.String() == "e" {
+		if msg.String() == "ctrl+e" {
 			if m.view == "list" {
 				m.view = "edit"
 				m.input = textinput.New()
