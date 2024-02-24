@@ -192,16 +192,22 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		if msg.String() == "d" || msg.String() == "backspace" {
 			if m.view == "list" {
-				// panic(m.list.SelectedItem().(Task).index)
-				m.list.RemoveItem(m.list.SelectedItem().(Task).index)
+				selectedItem := m.list.SelectedItem().(Task)
+				indexToRemove := selectedItem.index
+				m.list.RemoveItem(indexToRemove)
+
+				// Update indexes of tasks after removal
 				items := m.list.Items()
-				var tasks []Task = getTasksFromItems(items)
-				if len(tasks) == 0 {
-					WriteTasks([]JsonTask{})
+				for i, item := range items {
+					task := item.(Task)
+					task.index = i
+					items[i] = task
 				}
+
+				// Convert tasks to JSON and write to file
+				var tasks []Task = getTasksFromItems(items)
 				jsonTasks := Tasks2Json(tasks)
 				jsonTasks = SortJsonTasks(jsonTasks)
-				// panic(jsonTasks)
 				WriteTasks(jsonTasks)
 			}
 		}

@@ -6,6 +6,6 @@ if [ ! -d "$HOME/todotea" ]; then
 fi
 
 if [ -f "/bin/todotea" ]; then
-    sudo rm /bin/todotea
+    sudo rm /usr/local/bin/todotea
 fi
-sudo cp ./todotea /bin/
+sudo cp ./todotea /usr/local/bin
